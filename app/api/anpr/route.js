@@ -1,4 +1,5 @@
-import { connectDB, Vehicle } from "@/lib/mongo";
+// import { connectDB, Vehicle } from "@/lib/mongo";
+import { connectDB, Vehicle } from "../../../lib/mongo";
 import { NextResponse } from "next/server";
 import FormData from "form-data";
 import axios from "axios";
