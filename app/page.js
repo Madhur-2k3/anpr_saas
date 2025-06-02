@@ -53,6 +53,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function ANPRPage() {
@@ -115,6 +116,10 @@ export default function ANPRPage() {
           <pre className=" text-black">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
+      <br />
+      <br />
+
+      <Link href="/add-vehicle" className=" text-white">Add Vehicle</Link>
     </div>
   );
 }
