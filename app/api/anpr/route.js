@@ -20,7 +20,9 @@ export async function POST(request) {
     const form = new FormData();
     form.append("upload", buffer, {
       filename: file.name,
-      contentType: file.type || "image/jpeg",
+      // contentType: file.type || "image/jpeg",
+      contentType: file.type?.toLowerCase().includes("jpeg") ? "image/jpeg" : "image/jpg"
+
     });
 
     const plateRes = await axios.post(
