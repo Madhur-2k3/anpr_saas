@@ -92,7 +92,7 @@ export default function ANPRPage() {
     try {
       // Compress the file before uploading
       const options = {
-        maxSizeMB: 1,
+        maxSizeMB: 5,
         maxWidthOrHeight: 1024,
         useWebWorker: true,
       };
