@@ -111,28 +111,54 @@ console.log(rekRes);
 
 // const plate = candidates[0] || null;
 
-const textLines = (rekRes.TextDetections || [])
-  .filter(d => d.Type === "LINE" && d.DetectedText)
-  .map(d => d.DetectedText.replace(/\s/g, "").toUpperCase());
 
-// Try single lines
-let candidates = [...textLines];
 
-// Try combining pairs of lines (like 2-line plates)
-for (let i = 0; i < textLines.length - 1; i++) {
-  candidates.push(textLines[i] + textLines[i + 1]);
+// const textLines = (rekRes.TextDetections || [])
+//   .filter(d => d.Type === "LINE" && d.DetectedText)
+//   .map(d => d.DetectedText.replace(/\s/g, "").toUpperCase());
+
+// // Try single lines
+// let candidates = [...textLines];
+
+// // Try combining pairs of lines (like 2-line plates)
+// for (let i = 0; i < textLines.length - 1; i++) {
+//   candidates.push(textLines[i] + textLines[i + 1]);
+// }
+
+// // Filter only realistic plates
+// const plateRegexes = [
+//   /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/, // TS06EC9104
+// ];
+
+// const validPlates = candidates.filter(text =>
+//   plateRegexes.some(regex => regex.test(text))
+// );
+
+// const plate = validPlates[0] || null;
+
+
+// Get all text lines from Rekognition
+const lines = (rekRes.TextDetections || [])
+  .filter((d) => d.Type === "LINE" && d.Confidence > 85)
+  .map((d) => d.DetectedText.replace(/\s/g, "").toUpperCase());
+
+console.log("Detected lines:", lines);
+
+// Combine all possible pairs (including individual lines)
+let plateCandidates = [...lines];
+for (let i = 0; i < lines.length - 1; i++) {
+  plateCandidates.push(lines[i] + lines[i + 1]); // combine adjacent lines
 }
 
-// Filter only realistic plates
-const plateRegexes = [
-  /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/, // TS06EC9104
-];
+// Define Indian number plate regex (example: TS06EC9104)
+const plateRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,3}[0-9]{4}$/;
 
-const validPlates = candidates.filter(text =>
-  plateRegexes.some(regex => regex.test(text))
-);
+const plate = plateCandidates.find((text) => plateRegex.test(text));
 
-const plate = validPlates[0] || null;
+if (!plate) {
+  return NextResponse.json({ status: "no_plate_detected", candidates: plateCandidates });
+}
+
 
 
 
