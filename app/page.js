@@ -58,7 +58,7 @@ export default function ANPRPage() {
     <>
       <section className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <h2 className="text-5xl font-bold text-gray-400 mb-6 leading-tight">
             Extract License Plate Data
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"> Instantly</span>
           </h2>
@@ -76,7 +76,7 @@ export default function ANPRPage() {
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Camera className="w-8 h-8 text-white" />
                 </div>
-                <p className="text-xl text-gray-900">Capture Photo</p>
+                <p className="text-xl text-gray-400">Capture Photo</p>
                 <p className="text-gray-600">Use your device camera to capture license plates in real-time</p>
               </div>
             </div>
