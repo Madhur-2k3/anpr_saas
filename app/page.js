@@ -1,176 +1,9 @@
-// "use client";
-
-// import Link from "next/link";
-// import { useState } from "react";
-// import imageCompression from "browser-image-compression";
-
-// export default function ANPRPage() {
-//   const [file, setFile] = useState(null);
-//   const [result, setResult] = useState(null);
-//   const [loading, setLoading] = useState(false);
-
-//   const handleUpload = async () => {
-//     if (!file) return;
-//     setLoading(true);
-
-//     const formData = new FormData();
-//     formData.append("image", file);
-
-//     try {
-//       const res = await fetch("/api/anpr", {
-//         method: "POST",
-//         body: formData,
-//       });
-
-//       const data = await res.json();
-//       setResult(data);
-//     } catch (error) {
-//       setResult({ error: "Something went wrong." });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="p-6 max-w-md mx-auto">
-//       <h1 className="text-2xl font-bold mb-4">Live Camera Upload</h1>
-
-//       <input
-//         type="file"
-//         accept="image/*"
-//         capture="environment"
-//         onChange={(e) => setFile(e.target.files?.[0])}
-//         className="mb-4 block"
-//       />
-
-//       {file && (
-//         <img
-//           src={URL.createObjectURL(file)}
-//           alt="Preview"
-//           className="mb-4 w-full h-auto rounded border"
-//         />
-//       )}
-
-//       <button
-//         onClick={handleUpload}
-//         disabled={!file || loading}
-//         className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-//       >
-//         {loading ? "Checking..." : "Upload & Detect"}
-//       </button>
-
-//       {result && (
-//         <div className="mt-6 p-4 bg-gray-100 rounded">
-//           <pre className=" text-black">{JSON.stringify(result, null, 2)}</pre>
-//         </div>
-//       )}
-//       <br />
-//       <br />
-
-//       <Link href="/add-vehicle" className=" text-white">Add Vehicle</Link>
-//     </div>
-//   );
-// }
-
-
 "use client";
-
-// import Link from "next/link";
-// import { useState } from "react";
-// import imageCompression from "browser-image-compression";
-
-// export default function ANPRPage() {
-//   const [file, setFile] = useState(null);
-//   const [previewURL, setPreviewURL] = useState(null);
-//   const [result, setResult] = useState(null);
-//   const [loading, setLoading] = useState(false);
-
-//   const handleUpload = async () => {
-//     if (!file) return;
-//     setLoading(true);
-
-//     try {
-//       // Compress the file before uploading
-//       const options = {
-//         maxSizeMB: 5,
-//         maxWidthOrHeight: 1024,
-//         useWebWorker: true,
-//       };
-//       const compressedFile = await imageCompression(file, options);
-
-//       const formData = new FormData();
-//       formData.append("image", compressedFile);
-
-//       const res = await fetch("/api/anpr", {
-//         method: "POST",
-//         body: formData,
-//       });
-
-//       const data = await res.json();
-//       setResult(data);
-//     } catch (error) {
-//       setResult({ error: "Something went wrong." });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleFileChange = (e) => {
-//     const selected = e.target.files?.[0];
-//     if (selected) {
-//       setFile(selected);
-//       setPreviewURL(URL.createObjectURL(selected));
-//     }
-//   };
-
-//   return (
-//     <div className="p-6 max-w-md mx-auto">
-//       <h1 className="text-2xl font-bold mb-4">Live Camera Upload</h1>
-
-//       <input
-//         type="file"
-//         accept="image/*"
-//         capture="environment"
-//         onChange={handleFileChange}
-//         className="mb-4 block"
-//       />
-
-//       {previewURL && (
-//         <img
-//           src={previewURL}
-//           alt="Preview"
-//           className="mb-4 w-full h-auto rounded border"
-//         />
-//       )}
-
-//       <button
-//         onClick={handleUpload}
-//         disabled={!file || loading}
-//         className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-//       >
-//         {loading ? "Checking..." : "Upload & Detect"}
-//       </button>
-
-//       {result && (
-//         <div className="mt-6 p-4 bg-gray-100 rounded">
-//           <pre className="text-black">{JSON.stringify(result, null, 2)}</pre>
-//         </div>
-//       )}
-
-//       <br />
-//       <br />
-
-//       <Link href="/add-vehicle" className="text-white">
-//         Add Vehicle
-//       </Link>
-//     </div>
-//   );
-// }
-
-
 import Link from "next/link";
 import { useState } from "react";
 import imageCompression from "browser-image-compression";
+import { Camera } from "lucide-react";
+import { useRef } from "react";
 
 export default function ANPRPage() {
   const [file, setFile] = useState(null);
@@ -178,28 +11,18 @@ export default function ANPRPage() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const fileInputRef = useRef(null); //  create a ref
+
   const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
-
     try {
-      // --- START: Optimized Compression Options ---
       const options = {
-        maxSizeMB: 5,       // Keep the 5MB limit
-        maxWidthOrHeight: 1920, // Increase resolution significantly
+        maxSizeMB: 5,
+        maxWidthOrHeight: 1920,
         useWebWorker: true,
-        // You can also consider setting a `quality` option, though `maxSizeMB` often handles this implicitly.
-        // If you still have issues, you might try quality: 0.9 (0.7-1.0 range)
-        // quality: 0.9,
       };
-      // --- END: Optimized Compression Options ---
-
       const compressedFile = await imageCompression(file, options);
-
-      console.log('Original file size:', file.size / 1024 / 1024, 'MB');
-      console.log('Compressed file size:', compressedFile.size / 1024 / 1024, 'MB');
-      console.log('Compressed file dimensions:', compressedFile.width, 'x', compressedFile.height);
-
 
       const formData = new FormData();
       formData.append("image", compressedFile);
@@ -212,7 +35,7 @@ export default function ANPRPage() {
       const data = await res.json();
       setResult(data);
     } catch (error) {
-      console.error("Upload error:", error); // Log the actual error
+      console.error("Upload error:", error);
       setResult({ error: "Something went wrong during upload or processing." });
     } finally {
       setLoading(false);
@@ -227,46 +50,77 @@ export default function ANPRPage() {
     }
   };
 
+  const openCamera = () => {
+    fileInputRef.current?.click(); // 👈 programmatically open input
+  };
+
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Live Camera Upload</h1>
+    <>
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            Extract License Plate Data
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"> Instantly</span>
+          </h2>
+          <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            Upload images or capture photos to automatically extract license plate numbers with AI-powered recognition technology.
+          </p>
 
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileChange}
-        className="mb-4 block"
-      />
+          {/* Action Card */}
+          <div className="flex max-w-lg mx-auto mb-12">
+            <div
+              onClick={openCamera} // 👈 trigger hidden input
+              className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-200 group rounded-xl"
+            >
+              <div className="text-center px-4 py-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Camera className="w-8 h-8 text-white" />
+                </div>
+                <p className="text-xl text-gray-900">Capture Photo</p>
+                <p className="text-gray-600">Use your device camera to capture license plates in real-time</p>
+              </div>
+            </div>
+          </div>
 
-      {previewURL && (
-        <img
-          src={previewURL}
-          alt="Preview"
-          className="mb-4 w-full h-auto rounded border"
-        />
-      )}
+          {/* Hidden input for camera capture */}
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+          />
 
-      <button
-        onClick={handleUpload}
-        disabled={!file || loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-      >
-        {loading ? "Checking..." : "Upload & Detect"}
-      </button>
+          {/* Preview and Upload */}
+          {previewURL && (
+            <div className="p-6 max-w-md mx-auto">
+              <img
+                src={previewURL}
+                alt="Preview"
+                className="mb-4 w-full h-auto rounded border"
+              />
+              <button
+                onClick={handleUpload}
+                disabled={!file || loading}
+                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+              >
+                {loading ? "Checking..." : "Upload & Detect"}
+              </button>
 
-      {result && (
-        <div className="mt-6 p-4 bg-gray-100 rounded">
-          <pre className="text-black">{JSON.stringify(result, null, 2)}</pre>
+              {result && (
+                <div className="mt-6 p-4 bg-gray-100 rounded">
+                  <pre className="text-black">{JSON.stringify(result, null, 2)}</pre>
+                </div>
+              )}
+
+              <br />
+              <Link href="/add-vehicle" className="text-white">Add Vehicle</Link>
+            </div>
+          )}
         </div>
-      )}
-
-      <br />
-      <br />
-
-      <Link href="/add-vehicle" className="text-white">
-        Add Vehicle
-      </Link>
-    </div>
+      </section>
+    </>
   );
 }
+

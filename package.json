@@ -12,11 +12,13 @@
   "dependencies": {
     "@aws-sdk/client-rekognition": "^3.839.0",
     "@aws-sdk/client-s3": "^3.839.0",
+    "@clerk/nextjs": "^6.24.0",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.9.0",
     "browser-image-compression": "^2.0.2",
     "dotenv": "^16.5.0",
     "formidable": "^3.5.4",
+    "lucide-react": "^0.525.0",
     "mongoose": "^8.15.1",
     "next": "15.3.3",
     "react": "^19.0.0",
