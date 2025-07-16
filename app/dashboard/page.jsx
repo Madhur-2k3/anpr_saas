@@ -1,32 +1,38 @@
 "use client";
 import { useEffect, useState } from "react";
+import DashboardSkeleton from "../../components/DashboardSkeleton"; // 👈 Import the skeleton component
 
 export default function Dashboard() {
   const [uploads, setUploads] = useState([]);
-  const [error, setError] = useState(null); // Optional: state to show error messages
+  const [isLoading, setIsLoading] = useState(true); // 👈 1. Add loading state, true by default
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUploads = async () => {
-      try { // 👇 **FIX: Wrap fetch in a try...catch block**
+      setIsLoading(true); // Set loading to true before the fetch
+      try {
         const res = await fetch("/api/my-uploads");
-
-        if (!res.ok) { // Check if the response was successful
+        if (!res.ok) {
           throw new Error("Failed to fetch uploads from the server.");
         }
-
         const data = await res.json();
         setUploads(data);
       } catch (err) {
         console.error(err);
-        setError(err.message); // Set an error message to display
-        setUploads([]); // Ensure uploads is an empty array on error
+        setError(err.message);
+      } finally {
+        setIsLoading(false); // 👈 2. Set loading to false after fetch completes (in both success and error cases)
       }
     };
 
     fetchUploads();
   }, []);
 
-  // You can optionally render the error state
+  // 👇 3. Render the skeleton component while loading
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
   if (error) {
     return <div className="p-6 text-red-500">Error: {error}</div>;
   }
