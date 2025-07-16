@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import DashboardSkeleton from "../../components/DashboardSkeleton"; // 👈 Import the skeleton component
+import DashboardSkeleton from "../../components/DashboardSkeleton";
+import ImageWithShimmer from "../../components/ImageWithShimmer"; 
 
 export default function Dashboard() {
   const [uploads, setUploads] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // 👈 1. Add loading state, true by default
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUploads = async () => {
-      setIsLoading(true); // Set loading to true before the fetch
+      // ... (your existing fetch logic remains the same)
+      setIsLoading(true);
       try {
         const res = await fetch("/api/my-uploads");
         if (!res.ok) {
@@ -21,14 +23,13 @@ export default function Dashboard() {
         console.error(err);
         setError(err.message);
       } finally {
-        setIsLoading(false); // 👈 2. Set loading to false after fetch completes (in both success and error cases)
+        setIsLoading(false);
       }
     };
 
     fetchUploads();
   }, []);
 
-  // 👇 3. Render the skeleton component while loading
   if (isLoading) {
     return <DashboardSkeleton />;
   }
@@ -47,7 +48,12 @@ export default function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2">
           {uploads.map((upload) => (
             <div key={upload._id} className="p-4 border rounded shadow bg-slate-900 ">
-              <img src={upload.imageUrl} alt="Uploaded plate" className="mb-2 w-full max-h-60 object-cover rounded" />
+              {/* 👇 2. Replace the img tag with the new component */}
+              <ImageWithShimmer
+                src={upload.imageUrl}
+                alt="Uploaded plate"
+                className="mb-2 w-full h-60" // Note: height is now on the container
+              />
               <p className="text-slate-400"><strong className="text-slate-300">Detected Plates:</strong> {upload.detectedPlates.join(", ")}</p>
               <p className="text-sm text-gray-500">{new Date(upload.createdAt).toLocaleString()}</p>
             </div>
