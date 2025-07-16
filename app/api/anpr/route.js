@@ -299,14 +299,20 @@
 
 //Gemini v2
 import { s3, rekognition } from "../../../lib/aws";
-import { connectDB, Vehicle } from "../../../lib/mongo";
+import { connectDB, Vehicle,Upload } from "../../../lib/mongo";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { RekognitionClient, DetectTextCommand } from "@aws-sdk/client-rekognition";
+import { getAuth } from "@clerk/nextjs/server";
+
 
 export async function POST(req) {
   try {
+
+    const { userId } = getAuth(req);
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const formData = await req.formData();
     const file = formData.get("image");
 
@@ -427,9 +433,9 @@ export async function POST(req) {
     // Additionally, a hardcoded combination for known patterns if spatial fails for specific issues
     // For example, if 'MH34B' and 'W9018' are always separate, but *always* together:
     const specificCombinations = [];
-    if (words.includes('MH34B') && words.includes('W9018')) {
-        specificCombinations.push('MH34BW9018');
-    }
+    // if (words.includes('MH34B') && words.includes('W9018')) {
+    //     specificCombinations.push('MH34BW9018');
+    // }
     // Add other specific combinations as needed, but this can lead to brittle code.
     plateCandidates.push(...specificCombinations);
 
@@ -464,6 +470,13 @@ export async function POST(req) {
     }
 
     await connectDB();
+    await Upload.create({
+      userId,
+      imageUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`,
+      detectedPlates,
+      createdAt: new Date(),
+    });
+
     const plateResults = [];
 
     // Process each detected plate

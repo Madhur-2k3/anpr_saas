@@ -6,6 +6,7 @@ import {SignInButton,
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
+import Link from 'next/link'
 
 const Header = () => {
   return (
@@ -22,6 +23,12 @@ const Header = () => {
             <nav className="hidden md:flex items-center space-x-6">
               <button >About</button>
               <button >Pricing</button>
+              <Link href="/dashboard" className="text-blue-600 hover:underline">
+                Dashboard
+              </Link>
+              <Link href="/add-vehicle" className="text-blue-600 hover:underline">
+                Add Vehicle
+              </Link>
             </nav>
           </div>
           </div>
