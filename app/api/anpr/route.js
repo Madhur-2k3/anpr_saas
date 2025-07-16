@@ -498,6 +498,8 @@
 // }
 
 
+
+//from gemini pro v1
 import { s3, rekognition } from "../../../lib/aws";
 import { connectDB, Vehicle, Upload } from "../../../lib/mongo";
 import { v4 as uuidv4 } from "uuid";
@@ -617,10 +619,18 @@ export async function POST(req) {
     await connectDB();
     await Upload.create({
       userId,
-      imageUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`,
+      // The full URL for storage/reference if you want it
+      imageUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`, 
+      s3Key: key, // 👈 **SAVE THE KEY HERE**
       detectedPlates,
       createdAt: new Date(),
     });
+    // await Upload.create({
+    //   userId,
+    //   imageUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`,
+    //   detectedPlates,
+    //   createdAt: new Date(),
+    // });
 
     const plateResults = [];
     for (const plate of detectedPlates) {

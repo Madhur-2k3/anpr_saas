@@ -3,16 +3,33 @@ import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const [uploads, setUploads] = useState([]);
+  const [error, setError] = useState(null); // Optional: state to show error messages
 
   useEffect(() => {
     const fetchUploads = async () => {
-      const res = await fetch("/api/my-uploads");
-      const data = await res.json();
-      setUploads(data);
+      try { // 👇 **FIX: Wrap fetch in a try...catch block**
+        const res = await fetch("/api/my-uploads");
+
+        if (!res.ok) { // Check if the response was successful
+          throw new Error("Failed to fetch uploads from the server.");
+        }
+
+        const data = await res.json();
+        setUploads(data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message); // Set an error message to display
+        setUploads([]); // Ensure uploads is an empty array on error
+      }
     };
 
     fetchUploads();
   }, []);
+
+  // You can optionally render the error state
+  if (error) {
+    return <div className="p-6 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
