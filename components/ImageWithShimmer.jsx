@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 export default function ImageWithShimmer({ src, alt, className }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  console.log("isLoaded:", isLoaded);
 
   return (
     <div className={`relative ${className}`}>

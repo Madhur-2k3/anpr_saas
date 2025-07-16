@@ -56,7 +56,7 @@ export default function ANPRPage() {
 
   return (
     <>
-      <section className="container mx-auto px-4 py-16 text-center bg-gray-950/80">
+      <section className="container mx-auto px-4 py-16 text-center bg-gray-950/80 h-screen">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold text-gray-400 mb-6 leading-tight">
             Extract License Plate Data
