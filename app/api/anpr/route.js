@@ -509,6 +509,14 @@ import { DetectTextCommand } from "@aws-sdk/client-rekognition";
 import { getAuth } from "@clerk/nextjs/server";
 
 export async function POST(req) {
+
+  const noiseWords = new Set([
+  'HERO', 'HONDA', 'SPLENDOR', 'PASSION', 'GLAMOUR', 'BAJAJ',
+  'PULSAR', 'PLATINA', 'TVS', 'APACHE', 'ROYALENFIELD', 'IND', 'ANCE',
+  'MERO', 'MER0', 'HER0'  // 👈 Add these variants for robustness (OCR can misread 'O' as '0', etc.)
+]);
+
+
   try {
     const { userId } = getAuth(req);
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -597,6 +605,61 @@ export async function POST(req) {
     // =========================================================================
     
     console.log("✅ Step 2: Reconstructed Lines:", reconstructedLines);
+
+   // It generates all orderings of the 4 segments, joins them, and adds valid ones to reconstructedLines
+    // 👇👇👇 UPDATED SNIPPET: Handle >=4 detections by trying subsets of 4
+if (filteredDetections.length >= 4) {
+  const segments = filteredDetections.map(d => d.DetectedText);
+
+  // Helper to generate all combinations of 'k' items from an array
+  const generateCombinations = (arr, k) => {
+    const result = [];
+    const combine = (current, start) => {
+      if (current.length === k) {
+        result.push(current.slice());
+        return;
+      }
+      for (let i = start; i < arr.length; i++) {
+        current.push(arr[i]);
+        combine(current, i + 1);
+        current.pop();
+      }
+    };
+    combine([], 0);
+    return result;
+  };
+
+  // Helper to generate all permutations of an array (same as before)
+  const generatePermutations = (arr) => {
+    const result = [];
+    const permute = (current, remaining) => {
+      if (remaining.length === 0) {
+        result.push(current.slice());
+        return;
+      }
+      for (let i = 0; i < remaining.length; i++) {
+        current.push(remaining[i]);
+        const newRemaining = remaining.slice(0, i).concat(remaining.slice(i + 1));
+        permute(current, newRemaining);
+        current.pop();
+      }
+    };
+    permute([], arr);
+    return result;
+  };
+
+  // Generate combinations of 4 segments (if more than 4, this skips noisy ones)
+  const combos = generateCombinations(segments, 4);
+
+  combos.forEach(combo => {
+    const permutations = generatePermutations(combo);
+    permutations.forEach(perm => {
+      const joined = perm.join('');
+      reconstructedLines.push(joined);  // Add to lines—regex will filter later
+    });
+  });
+}
+
 
     if (reconstructedLines.length === 0) {
         return NextResponse.json({ status: "no_plate_detected", message: "No text lines reconstructed." });
